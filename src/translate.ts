@@ -82,17 +82,17 @@ export async function translate(
       .replace(/>/g, "&gt;")
       .replace(/\r?\n/g, " &#10; ");
 
-    const context = contextFile?"\n\nContext: " + fs.readFileSync(contextFile, "utf-8"):"";
+  const context = contextFile ? "\n\nContext: " + fs.readFileSync(contextFile, "utf-8") : "";
 
-    const translationsContent = translations
-        .map((tr, idx) => {
-            const contextAttr = tr.msgctxt?` context="${escapePseudoXmlAttr(tr.msgctxt)}"`:"";
-            const noteAttr = tr.comments?.extracted?` note="${escapePseudoXmlAttr(tr.comments.extracted)}"`:"";
-            return `<translate index="${idx + dicts.user.length + 1}"${contextAttr}${noteAttr}>${tr.msgid}</translate>`;
-        })
-        .join("\n");
+  const translationsContent = translations
+    .map((tr, idx) => {
+      const contextAttr = tr.msgctxt?` context="${escapePseudoXmlAttr(tr.msgctxt)}"` : "";
+      const noteAttr = tr.comments?.extracted?` note="${escapePseudoXmlAttr(tr.comments.extracted)}"` : "";
+      return `<translate index="${idx + dicts.user.length + 1}"${contextAttr}${noteAttr}>${tr.msgid}</translate>`;
+    })
+    .join("\n");
 
-    const res = await _openai.chat.completions.create(
+  const res = await _openai.chat.completions.create(
     {
       model: model,
       temperature: process.env.OPENAI_MODEL_TMP ? parseFloat(process.env.OPENAI_MODEL_TMP) : 0.1,
