@@ -74,21 +74,21 @@ export async function translate(
     { user: <string[]>[], assistant: <string[]>[] }
   );
 
-  const notes = translations
-    .reduce((acc: string[], tr) => {
-      if (tr.comments?.extracted) {
-        acc.push(tr.comments?.extracted);
-      }
-      return acc;
-    }, [])
-    .join("\n");
+  const escapePseudoXmlAttr = (value: string): string =>
+    String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\r?\n/g, " &#10; ");
 
   const context = contextFile ? "\n\nContext: " + fs.readFileSync(contextFile, "utf-8") : "";
 
   const translationsContent = translations
     .map((tr, idx) => {
-      const contextAttr = tr.msgctxt ? ` context="${tr.msgctxt}"` : "";
-      return `<translate index="${idx + dicts.user.length + 1}"${contextAttr}>${tr.msgid}</translate>`;
+      const contextAttr = tr.msgctxt ? ` context="${escapePseudoXmlAttr(tr.msgctxt)}"` : "";
+      const noteAttr = tr.comments?.extracted ? ` note="${escapePseudoXmlAttr(tr.comments.extracted)}"` : "";
+      return `<translate index="${idx + dicts.user.length + 1}"${contextAttr}${noteAttr}>${tr.msgid}</translate>`;
     })
     .join("\n");
 
@@ -104,8 +104,7 @@ export async function translate(
         {
           role: "user",
           content:
-            `${_userprompt}\n\nWait for my incoming message(s) in \`${src}\` and translate them into \`${lang}\` (\`${src}\` and \`${lang}\` are XPG/POSIX locale names, used in Unix-like systems and GNU Gettext). ` +
-            notes
+            `${_userprompt}\n\nWait for my incoming message(s) in \`${src}\` and translate them into \`${lang}\` (\`${src}\` and \`${lang}\` are XPG/POSIX locale names, used in Unix-like systems and GNU Gettext).`
         },
         {
           role: "assistant",
