@@ -86,8 +86,8 @@ export async function translate(
 
   const translationsContent = translations
     .map((tr, idx) => {
-      const contextAttr = tr.msgctxt?` context="${escapePseudoXmlAttr(tr.msgctxt)}"` : "";
-      const noteAttr = tr.comments?.extracted?` note="${escapePseudoXmlAttr(tr.comments.extracted)}"` : "";
+      const contextAttr = tr.msgctxt ? ` context="${escapePseudoXmlAttr(tr.msgctxt)}"` : "";
+      const noteAttr = tr.comments?.extracted ? ` note="${escapePseudoXmlAttr(tr.comments.extracted)}"` : "";
       return `<translate index="${idx + dicts.user.length + 1}"${contextAttr}${noteAttr}>${tr.msgid}</translate>`;
     })
     .join("\n");
