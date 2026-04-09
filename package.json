@@ -14,7 +14,8 @@
     "build": "tsc",
     "postbuild": "ncp ./src/ ./lib/src/ \"--filter=^(?!.*\\.ts$).*$\"",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json"
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
